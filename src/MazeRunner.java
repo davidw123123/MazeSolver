@@ -7,7 +7,6 @@ public class MazeRunner {
             System.out.println(Arrays.toString(temp));
         }
         mazeSolver.partOne();
-        System.out.println(mazeSolver.getCoordinates());
 
     }
 
