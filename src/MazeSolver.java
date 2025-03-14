@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class MazeSolver {
@@ -11,8 +10,10 @@ public class MazeSolver {
     int lastX;
     int lastY;
     String[][] maze;
-
     ArrayList<String> coordinates = new ArrayList<>();
+    ArrayList<Integer> tempX = new ArrayList<>();
+    ArrayList<Integer> tempY = new ArrayList<>();
+
 
     public static String[][] getMaze(String fileName) {
         File f = new File(fileName);
@@ -30,7 +31,7 @@ public class MazeSolver {
             fileData.add(s.nextLine());
 
         int rows = fileData.size();
-        int cols = fileData.get(0).length();
+        int cols = fileData.getFirst().length();
 
         String[][] maze = new String[rows][cols];
 
@@ -45,20 +46,15 @@ public class MazeSolver {
     public boolean goUp()
     {
         try {
-            if ((!maze[currentX - 1][currentY].equals("#")) && !maze[currentX - 1][currentY].equals("-")){
-            return true;
-            }
-        return false;
+            return (!maze[currentX - 1][currentY].equals("#")) && !maze[currentX - 1][currentY].equals("-");
         }
         catch (Exception e) {
             return false;
          }
     }
     public boolean goDown() {
-       try{ if ((!maze[currentX + 1][currentY].equals("#") &&!maze[currentX + 1][currentY].equals("-"))) {
-            return true;
-        }
-        return false;
+       try{
+           return !maze[currentX + 1][currentY].equals("#") && !maze[currentX + 1][currentY].equals("-");
        } catch (Exception e)
         {
         return false;
@@ -67,21 +63,16 @@ public class MazeSolver {
     public boolean goLeft()
     {
         try {
-            if ((!maze[currentX][currentY - 1].equals("#") && !maze[currentX ][currentY- 1].equals("-"))) {
-                return true;
-            }
-            return false;
+            return !maze[currentX][currentY - 1].equals("#") && !maze[currentX][currentY - 1].equals("-");
         } catch (Exception e)
             {
                 return false;
             }
         }
     public boolean goRight() {
-       try{ if ((!maze[currentX][currentY + 1].equals("#") && !maze[currentX ][currentY+1].equals("-"))) {
-            return true;
-        }
-        return false;
-    }  catch (Exception e)
+       try{
+           return !maze[currentX][currentY + 1].equals("#") && !maze[currentX][currentY + 1].equals("-");
+       }  catch (Exception e)
         {
             return false;
         }
@@ -101,43 +92,25 @@ public class MazeSolver {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
             currentX = currentX+1;
-            System.out.println();
-            for (String[] temp : maze)
-            {
-                System.out.println(Arrays.deepToString(temp));
-            }
-        } else
-        if (goUp()&&!maze[currentX][currentY].equals( "-" ))
+        }
+        else if (goUp()&&!maze[currentX][currentY].equals( "-" ))
         {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
             currentX = currentX-1;
-            System.out.println();
-            for (String[] temp : maze)
-            {
-                System.out.println("ee" + Arrays.deepToString(temp));
-            }
-        }else
-        if (goRight())
+        }
+        else if (goRight())
         {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
             currentY = currentY+1;
-            System.out.println();
-            for (String[] temp : maze)
-            {
-               System.out.println(Arrays.deepToString(temp));
-            }        }else
-        if (goLeft())
+        }
+        else if (goLeft())
         {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
             currentY = currentY-1;
-            System.out.println();
-            for (String[] temp : maze)
-            {
-               System.out.println(Arrays.deepToString(temp));
-            }        }
+        }
     }
 
     public ArrayList<String> getCoordinates()
@@ -164,13 +137,48 @@ public class MazeSolver {
     }
     public void partOne()
     {
-
         int periodCount = periodCount();
         for (int i = 0; i < periodCount; i++) {
             movePosition();
         }
         coordinates.add("(" + lastX +"," + lastY+")"  );
-        System.out.println(coordinates);
     }
+    public int multipleDirections(){
+        //
+        if (goLeft() && goUp())
+        {
+            return 1;
+        }
+        if (goLeft() && goRight())
+        {
+            return 2;
+        }
+        if (goLeft() && goDown())
+        {
+            return 3;
+        }
+        //
+        if (goRight() && goUp())
+        {
+            return 4;
+        }
+        if (goRight() && goDown())
+        {
+            return 5;
+        }
+        //
+        if (goDown() && goUp())
+        {
+            return 6;
+        }
+        return 0;
+    }
+    public boolean checkFork(){
 
+        if (multipleDirections() > 0)
+        {
+            tempX.add(currentX);
+            tempY.add(currentY);
+        }
+    }
 }
