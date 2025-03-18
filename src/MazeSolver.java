@@ -87,8 +87,10 @@ public class MazeSolver {
 
     public void movePosition()
     {
+
         if (goDown() && !maze[currentX][currentY].equals( "-" ))
         {
+
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
             currentX = currentX+1;
@@ -174,11 +176,14 @@ public class MazeSolver {
         return 0;
     }
     public boolean checkFork(){
-
-        if (multipleDirections() > 0)
+        ArrayList<Integer> tempX = new ArrayList<>();
+        ArrayList<Integer> tempY = new ArrayList<>();
+        int direction = multipleDirections();
+        if (direction > 0)
         {
             tempX.add(currentX);
             tempY.add(currentY);
         }
+        return false;
     }
 }
