@@ -20,8 +20,7 @@ public class MazeSolver {
         Scanner s = null;
         try {
             s = new Scanner(f);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("File not found.");
             System.exit(1);
         }
@@ -43,147 +42,159 @@ public class MazeSolver {
         }
         return maze;
     }
-    public boolean goUp()
-    {
+
+    public boolean goUp() {
         try {
             return (!maze[currentX - 1][currentY].equals("#")) && !maze[currentX - 1][currentY].equals("-");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
-         }
-    }
-    public boolean goDown() {
-       try{
-           return !maze[currentX + 1][currentY].equals("#") && !maze[currentX + 1][currentY].equals("-");
-       } catch (Exception e)
-        {
-        return false;
         }
     }
-    public boolean goLeft()
-    {
+
+    public boolean goDown() {
+        try {
+            return !maze[currentX + 1][currentY].equals("#") && !maze[currentX + 1][currentY].equals("-");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean goLeft() {
         try {
             return !maze[currentX][currentY - 1].equals("#") && !maze[currentX][currentY - 1].equals("-");
-        } catch (Exception e)
-            {
-                return false;
-            }
-        }
-    public boolean goRight() {
-       try{
-           return !maze[currentX][currentY + 1].equals("#") && !maze[currentX][currentY + 1].equals("-");
-       }  catch (Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
     }
-    public MazeSolver(String fileName)
-    {
+
+    public boolean goRight() {
+        try {
+            return !maze[currentX][currentY + 1].equals("#") && !maze[currentX][currentY + 1].equals("-");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public MazeSolver(String fileName) {
         maze = getMaze(fileName);
         currentPosition = "(0,0)";
-        lastY = maze[0].length-1;
-        lastX= maze.length-1;
+        lastY = maze[0].length - 1;
+        lastX = maze.length - 1;
     }
 
-    public void movePosition()
-    {
-
-        if (goDown() && !maze[currentX][currentY].equals( "-" ))
-        {
+    public void movePosition() {
+        if (goDown() && !maze[currentX][currentY].equals("-")) {
 
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
-            currentX = currentX+1;
-        }
-        else if (goUp()&&!maze[currentX][currentY].equals( "-" ))
-        {
+            currentX = currentX + 1;
+        } else if (goUp() && !maze[currentX][currentY].equals("-")) {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
-            currentX = currentX-1;
-        }
-        else if (goRight())
-        {
+            currentX = currentX - 1;
+        } else if (goRight()) {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
-            currentY = currentY+1;
-        }
-        else if (goLeft())
-        {
+            currentY = currentY + 1;
+        } else if (goLeft()) {
             coordinates.add("(" + currentX + "," + currentY + ")");
             maze[currentX][currentY] = "-";
-            currentY = currentY-1;
+            currentY = currentY - 1;
         }
+
+        fillDeadEndPath();
     }
 
-    public ArrayList<String> getCoordinates()
-    {
+    public ArrayList<String> getCoordinates() {
         return coordinates;
     }
+
     public String[][] getMaze() {
         return maze;
     }
-    public int periodCount()
-    {
-        int count=0;
-        for (String[] period : maze)
-        {
-            for (String periods : period)
-            {
-                if (periods.equals("."))
-                {
+
+    public int periodCount() {
+        int count = 0;
+        for (String[] period : maze) {
+            for (String periods : period) {
+                if (periods.equals(".")) {
                     count++;
                 }
             }
         }
         return count;
     }
-    public void partOne()
-    {
+
+    public void partOne() {
         int periodCount = periodCount();
         for (int i = 0; i < periodCount; i++) {
             movePosition();
         }
-        coordinates.add("(" + lastX +"," + lastY+")"  );
+        coordinates.add("(" + lastX + "," + lastY + ")");
     }
-    public int multipleDirections(){
+
+    public int multipleDirections() {
         //
-        if (goLeft() && goUp())
-        {
+        if (goLeft() && goUp()) {
             return 1;
         }
-        if (goLeft() && goRight())
-        {
+        if (goLeft() && goRight()) {
             return 2;
         }
-        if (goLeft() && goDown())
-        {
+        if (goLeft() && goDown()) {
             return 3;
         }
         //
-        if (goRight() && goUp())
-        {
+        if (goRight() && goUp()) {
             return 4;
         }
-        if (goRight() && goDown())
-        {
+        if (goRight() && goDown()) {
             return 5;
         }
         //
-        if (goDown() && goUp())
-        {
+        if (goDown() && goUp()) {
             return 6;
         }
         return 0;
     }
-    public boolean checkFork(){
-        ArrayList<Integer> tempX = new ArrayList<>();
-        ArrayList<Integer> tempY = new ArrayList<>();
-        int direction = multipleDirections();
-        if (direction > 0)
+    public boolean deadEnd(){
+        if ((!goUp() && !goDown() && !goLeft() && !goRight()))
         {
-            tempX.add(currentX);
-            tempY.add(currentY);
+            return true;
         }
         return false;
+    }
+
+    public void fillDeadEndPath() {
+        if (multipleDirections() > 0) {
+            int x = currentX;
+            int y = currentY;
+            boolean temp = false;
+            ArrayList<String> paths = new ArrayList<>();
+
+            while (!deadEnd()) {
+                paths.add("(" + currentX + "," + currentY + ")");
+                movePosition();
+                if (currentX == lastX && currentY == lastY) {
+                    return;
+                }
+
+                if (deadEnd()) {
+                    temp = true;
+                }
+            }
+
+            if (temp) {
+                for (String path : paths) {
+                    coordinates.remove(path);
+                    int backtrackX = Integer.parseInt(path.substring(1, path.indexOf(",")));
+                    int backtrackY = Integer.parseInt(path.substring(path.indexOf(",") + 1, path.length() - 1));
+                    maze[backtrackX][backtrackY] = "#";
+                }
+            }
+
+            currentX = x;
+            currentY = y;
+        }
     }
 }
