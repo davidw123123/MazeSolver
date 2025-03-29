@@ -125,7 +125,7 @@ public class MazeSolver {
         return count;
     }
 
-    public void partOne() {
+    public void solver() {
         int periodCount = periodCount();
         for (int i = 0; i < periodCount; i++) {
             movePosition();
